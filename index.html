@@ -37,7 +37,44 @@
     <div id="root"></div>
     <div id="boot" class="boot">
       <div class="boot-logo"></div>
+      <p id="boot-msg"></p>
     </div>
+    <script>
+      /* Watchdog: a silent blank screen is the worst failure mode, so surface
+         anything that stops the app from mounting. */
+      (function () {
+        var boot = document.getElementById('boot')
+        var msg = document.getElementById('boot-msg')
+        var shown = false
+        function show(title, detail) {
+          if (shown || !boot || boot.classList.contains('hide')) return
+          shown = true
+          boot.classList.add('boot-error')
+          msg.innerHTML =
+            '<strong>' +
+            title +
+            '</strong><span>' +
+            String(detail || '').slice(0, 400) +
+            '</span><button onclick="location.reload()">আবার চেষ্টা করুন</button>'
+        }
+        window.addEventListener('error', function (e) {
+          if (e.target && e.target.tagName === 'SCRIPT')
+            return show('স্ক্রিপ্ট লোড হয়নি', (e.target.src || '') + ' — নেটওয়ার্ক বা অ্যাড-ব্লকার চেক করুন')
+          show('অ্যাপ চালু হতে পারেনি', (e.error && e.error.stack) || e.message)
+        }, true)
+        window.addEventListener('unhandledrejection', function (e) {
+          show('অ্যাপ চালু হতে পারেনি', (e.reason && (e.reason.stack || e.reason.message)) || e.reason)
+        })
+        setTimeout(function () {
+          var root = document.getElementById('root')
+          if (root && root.childElementCount === 0)
+            show(
+              'লোড হতে বেশি সময় লাগছে',
+              'JavaScript মডিউল লোড হয়নি। পেজটি রিফ্রেশ করুন; সমস্যা থাকলে ব্রাউজার কনসোল দেখুন।',
+            )
+        }, 10000)
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

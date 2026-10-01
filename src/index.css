@@ -191,6 +191,49 @@ textarea {
   opacity: 0;
   pointer-events: none;
 }
+.boot {
+  flex-direction: column;
+}
+#boot-msg {
+  display: none;
+}
+.boot.boot-error #boot-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  max-width: 420px;
+  margin: 22px 16px 0;
+  padding: 18px;
+  border-radius: 20px;
+  text-align: center;
+  background: rgb(var(--glass) / var(--glass-a));
+  border: 1px solid rgb(var(--line) / var(--line-a));
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+#boot-msg strong {
+  font-size: 1rem;
+  color: var(--color-ios-red);
+}
+#boot-msg span {
+  color: rgb(var(--muted));
+  word-break: break-word;
+}
+#boot-msg button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 99px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--color-ios-blue);
+  font-weight: 600;
+}
+.boot.boot-error .boot-logo {
+  animation: none;
+  opacity: 0.5;
+}
+
 .boot-logo {
   width: 54px;
   height: 54px;

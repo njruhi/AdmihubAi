@@ -3,6 +3,8 @@ import { AlertCircle, CheckCircle2, Info, X } from 'lucide-react'
 import { Sidebar } from './components/Sidebar'
 import { TopBar } from './components/TopBar'
 import { ChatView } from './components/chat/ChatView'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import type { ViewId } from './types'
 
 /* Secondary screens load on demand — keeps first paint instant */
 const SettingsModal = lazy(() => import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal })))
@@ -64,26 +66,42 @@ export default function App() {
       <main className="relative z-10 flex min-w-0 flex-1 flex-col">
         <TopBar />
         <div className="min-h-0 flex-1">
-          <Suspense fallback={<ViewSkeleton />}>
-            {view === 'chat' && <ChatView />}
-            {view === 'mcq' && <McqView />}
-            {view === 'brain' && <BrainView />}
-            {view === 'knowledge' && <KnowledgeView />}
-            {view === 'quizbank' && <QuizBankView />}
-            {view === 'flashcards' && <FlashcardsView />}
-            {view === 'notes' && <NotesView />}
-            {view === 'timer' && <TimerView />}
-            {view === 'progress' && <ProgressView />}
-          </Suspense>
+          <ErrorBoundary key={view} label={VIEW_LABEL[view]}>
+            <Suspense fallback={<ViewSkeleton />}>
+              {view === 'chat' && <ChatView />}
+              {view === 'mcq' && <McqView />}
+              {view === 'brain' && <BrainView />}
+              {view === 'knowledge' && <KnowledgeView />}
+              {view === 'quizbank' && <QuizBankView />}
+              {view === 'flashcards' && <FlashcardsView />}
+              {view === 'notes' && <NotesView />}
+              {view === 'timer' && <TimerView />}
+              {view === 'progress' && <ProgressView />}
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </main>
 
-      <Suspense fallback={null}>
-        <SettingsModal />
-      </Suspense>
+      <ErrorBoundary label="সেটিংস">
+        <Suspense fallback={null}>
+          <SettingsModal />
+        </Suspense>
+      </ErrorBoundary>
       <Toast />
     </div>
   )
+}
+
+const VIEW_LABEL: Record<ViewId, string> = {
+  chat: 'AI চ্যাট',
+  mcq: 'MCQ টেস্ট',
+  brain: 'Brain / মেমোরি',
+  knowledge: 'নলেজ বেস',
+  quizbank: 'কুইজ ব্যাংক',
+  flashcards: 'ফ্ল্যাশকার্ড',
+  notes: 'নোট',
+  timer: 'টাইমার',
+  progress: 'প্রোগ্রেস',
 }
 
 function ViewSkeleton() {
